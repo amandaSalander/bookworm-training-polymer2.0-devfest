@@ -1,0 +1,7 @@
+{
+  "name": "polymer-project",
+  "short_name": "polymer-project",
+  "description": "an event website for the DevFest Algiers",
+  "start_url": "/",
+  "display": "standalone"
+}

@@ -1,0 +1,23 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+
+<dom-module id="agenda-page">
+	<template>
+		<style>
+			:host {
+				display: block;
+			}
+		</style>
+		<h1>This is the agenda page</h1>
+	</template>
+	<script>
+		class AgendaPage extends Polymer.Element{
+			static get is(){return 'agenda-page';}
+			static get properties(){
+				return {
+
+				};
+			}
+		}
+		window.customElements.define(AgendaPage.is,AgendaPage);
+	</script>
+</dom-module>

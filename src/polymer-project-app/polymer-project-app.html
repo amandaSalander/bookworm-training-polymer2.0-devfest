@@ -1,0 +1,175 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/font-roboto/roboto.html">
+<link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../../bower_components/iron-image/iron-image.html">
+<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../bower_components/app-layout/app-drawer/app-drawer.html">
+<link rel="import" href="../../bower_components/app-layout/app-scroll-effects/app-scroll-effects.html">
+<link rel="import" href="../../bower_components/app-layout/app-header/app-header.html">
+<link rel="import" href="../../bower_components/app-layout/app-toolbar/app-toolbar.html">
+<link rel="import" href="../../bower_components/app-route/app-location.html">
+<link rel="import" href="../../bower_components/app-route/app-route.html">
+<link rel="import" href="../../bower_components/paper-styles/color.html">
+<link rel="import" href="../../bower_components/iron-selector/iron-selector.html">
+<link rel="import" href="../../bower_components/iron-pages/iron-pages.html">
+<link rel="import" href="my-icons.html">
+<link rel="lazy-import" href="home-page.html">
+<link rel="lazy-import" href="agenda-page.html">
+<link rel="lazy-import" href="speaker-page.html">
+<link rel="lazy-import" href="error404-page.html">
+<dom-module id="polymer-project-app">
+    <template>
+        <style>
+         :host {
+            display: block;
+        }
+
+        #startDrawer {
+            --app-drawer-content-container: {
+                box-shadow: 1px 0 2px 1px rgba(0, 0, 0, 0.18);
+            }
+        }
+
+        #endDrawer {
+            --app-drawer-content-container: {
+                box-shadow: -1px 0 2px 1px rgba(0, 0, 0, 0.18);
+            }
+        }
+
+        app-header {
+            z-index: 2;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background-color: var(--paper-blue-900);
+            color: #fff;
+            --app-header-background-front-layer: {
+                background-image: url(../../images/algiers_1.jpg);
+                background-position: left center;
+            }
+            ;
+            --app-header-background-rear-layer: {
+                background-image: url(../../images/algiers_3.jpg);
+                background-position: left center;
+            }
+            ;
+        }
+
+        app-header paper-icon-button {
+            --paper-icon-button-ink-color: white;
+        }
+
+        .drawer-list {
+            margin: 0 20px;
+        }
+
+        .drawer-list a {
+            /*display: block;*/
+            padding: 0 16px;
+            text-decoration: none;
+            color: var(--app-secondary-color);
+            line-height: 40px;
+        }
+
+        .drawer-list a.iron-selected {
+            color: var(--paper-blue-300);
+            font-weight: bold;
+        }
+
+        .menu {
+            background-color: rgb(0, 0, 0, 0.5);
+        }
+
+        iron-pages {
+            margin-top: 320px;
+            z-index: 0;
+        }
+        </style>
+        <app-location route="{{route}}" url-space-regex="^[[rootPath]]">
+        </app-location>
+        <app-route route="{{route}}" pattern="[[rootPath]]:page" data="{{routeData}}" tail="{{subroute}}">
+        </app-route>
+        <app-header condenses reveals main fixed effects="waterfall resize-title blend-background parallax-background">
+            <app-toolbar>
+                <paper-icon-button icon="menu" onclick="startDrawer.toggle()"></paper-icon-button>
+                <div spacer main-title>
+                    <iron-image src="../../images/logo.png" sizing="contain"  style="width: 160px;height: 70px;margin-top: 5px;" preload ></iron-image>
+                </div>
+            </app-toolbar>
+            <app-toolbar></app-toolbar>
+            <app-toolbar></app-toolbar>
+            <app-toolbar>
+            </app-toolbar>
+            <app-toolbar class="menu">
+                <div main-title></div>
+                <iron-selector selected="[[page]]" attr-for-selected="name" class="drawer-list" role="navigation">
+                    <a name="home" href="[[rootPath]]home">Home</a>
+                    <a name="agenda" href="[[rootPath]]agenda">Agenda</a>
+                    <a name="speaker" href="[[rootPath]]speaker">Speakers</a>
+                    <a name="last-editions" href="[[rootPath]]last-editions">Last editions</a>
+                    <a name="about-us" href="[[rootPath]]about-us">about us</a>
+                    <a name="contact-us" href="[[rootPath]]contact-us">contact us</a>
+                </iron-selector>
+            </app-toolbar>
+        </app-header>
+        <app-drawer id="startDrawer" align="start"></app-drawer>
+        <iron-pages selected="[[page]]" attr-for-selected="name" fallback-selection="error404" role="main">
+            <home-page name="home"></home-page>
+            <agenda-page name="agenda"></agenda-page>
+            <speaker-page name="speaker"></speaker-page>
+            <error404-page name="error404"></error404-page>
+        </iron-pages>
+        
+    </template>
+    <script>
+    /**
+     * @customElement
+     * @polymer
+     */
+    class PolymerProjectApp extends Polymer.Element {
+        static get is() { return 'polymer-project-app'; }
+        static get properties() {
+            return {
+                page: {
+                    type: String,
+                    reflectToAttribute: true,
+                    observer: '_pageChanged',
+                },
+                routeData: Object,
+                subroute: String,
+                // This shouldn't be neccessary, but the Analyzer isn't picking up
+                // Polymer.Element#rootPath
+                rootPath: String,
+            };
+        }
+        static get observers() {
+            return [
+                '_routePageChanged(routeData.page)',
+            ];
+        }
+
+        _routePageChanged(page) {
+            // If no page was found in the route data, page will be an empty string.
+            // Default to 'view1' in that case.
+            this.page = page || 'home';
+        }
+
+        _pageChanged(page) {
+            // Load page import on demand. Show 404 page if fails
+            var resolvedPageUrl = this.resolveUrl(page + '-page.html');
+            Polymer.importHref(
+                resolvedPageUrl,
+                null,
+                this._showPage404.bind(this),
+                true);
+        }
+
+        _showPage404() {
+            this.page = 'error404';
+        }
+    }
+
+    window.customElements.define(PolymerProjectApp.is, PolymerProjectApp);
+    </script>
+</dom-module>

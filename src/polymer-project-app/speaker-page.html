@@ -1,0 +1,28 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/paper-card/paper-card.html">
+<dom-module id="speaker-page">
+	<template>
+		<style>
+			:host {
+				display: block;
+			}
+		</style>
+		<paper-card heading="Card title" image="" elevation="1" animated-shadow="false">
+		  <div class="card-content"></div>
+		  <div class="card-actions">
+		    
+		  </div>
+		</paper-card>
+	</template>
+	<script>
+		class SpeakerPage extends Polymer.Element{
+			static get is(){return 'speaker-page';}
+			static get properties(){
+				return {
+
+				};
+			}
+		}
+		window.customElements.define(SpeakerPage.is,SpeakerPage);
+	</script>
+</dom-module>
